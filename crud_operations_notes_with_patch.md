@@ -45,12 +45,10 @@ app.post('/users', async (req, res) => {
 ### ✅ CLIENT SIDE - Load All Users
 
 ```jsx
-// Route
 path: '/users',
 element: <Users></Users>,
 loader: () => fetch('http://localhost:5000/users')
 
-// Inside Users component
 const loadedUsers = useLoaderData();
 ```
 
@@ -64,12 +62,9 @@ app.get('/users', async (req, res) => {
 });
 ```
 
----
-
 ### ✅ CLIENT SIDE - Load Specific User by ID
 
 ```jsx
-// Route
 path: '/update/:id',
 element: <Update></Update>,
 loader: ({ params }) => fetch(`http://localhost:5000/users/${params.id}`)
@@ -92,9 +87,7 @@ app.get('/users/:id', async (req, res) => {
 
 ### ✅ CLIENT SIDE
 
-```jsx
-<button onClick={() => handleDelete(user._id)}>X</button>
-
+```js
 const handleDelete = _id => {
     fetch(`http://localhost:5000/users/${_id}`, {
         method: 'DELETE'
@@ -157,7 +150,6 @@ const handleUpdate = event => {
 app.put('/users/:id', async (req, res) => {
     const id = req.params.id;
     const user = req.body;
-
     const filter = { _id: new ObjectId(id) };
     const options = { upsert: true };
     const updatedUser = {
@@ -166,7 +158,6 @@ app.put('/users/:id', async (req, res) => {
             email: user.email
         }
     };
-
     const result = await userCollection.updateOne(filter, updatedUser, options);
     res.send(result);
 });
@@ -225,8 +216,7 @@ app.patch('/users', async (req, res) => {
 
 ---
 
-
-## 📋 Summary Table
+## 📋 Updated Summary Table
 
 | CRUD Type | HTTP Method | MongoDB Method    | Client Code Example                            | Server Route                 | Description                                 |
 |-----------|-------------|-------------------|------------------------------------------------|------------------------------|---------------------------------------------|
@@ -235,4 +225,3 @@ app.patch('/users', async (req, res) => {
 | Update    | PUT         | `updateOne()`     | `fetch('/users/:id', { method: 'PUT' })`       | `app.put('/users/:id')`      | Replace all fields in a document            |
 | Update    | PATCH       | `updateOne()`     | `fetch('/users', { method: 'PATCH' })`         | `app.patch('/users')`        | Update specific field(s) only               |
 | Delete    | DELETE      | `deleteOne()`     | `fetch('/users/:id', { method: 'DELETE' })`    | `app.delete('/users/:id')`   | Remove a document                           |
-
