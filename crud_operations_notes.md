@@ -85,6 +85,46 @@ app.get('/users/:id', async (req, res) => {
     res.send(user);
 });
 ```
+--
+
+## 📥 GET with Query + Join-like Data Aggregation (Not Ideal Way)
+
+### ✅ CLIENT SIDE
+
+```js
+useEffect(() => {
+    fetch(`http://localhost:5000/job-application?email=${user.email}`)
+        .then(res => res.json())
+        .then(data => setJobs(data));
+}, [user.email]);
+```
+
+### ✅ SERVER SIDE
+
+```js
+app.get('/job-application', async (req, res) => {
+    const email = req.query.email;
+    const query = { applicant_email: email };
+    const result = await jobApplicationCollection.find(query).toArray();
+
+    // Manual aggregation (not optimal for large data)
+    for (const application of result) {
+        const job = await jobsCollection.findOne({ _id: new ObjectId(application.job_id) });
+        if (job) {
+            application.title = job.title;
+            application.location = job.location;
+            application.company = job.company;
+            application.company_logo = job.company_logo;
+        }
+    }
+
+    res.send(result);
+});
+```
+
+### 🔎 Note:
+- This approach manually joins data from two collections by performing separate `findOne` queries.
+- For **better performance**, consider using **MongoDB aggregation pipeline** with `$lookup` for join-like operations.
 
 ---
 
